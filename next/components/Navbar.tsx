@@ -1,5 +1,6 @@
 import { Flex, Heading } from "@chakra-ui/react";
 import React from "react";
+import { NextLink } from ".";
 import NavSearch from "./NavSearch";
 
 interface NavbarProps {}
@@ -17,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({}) => {
       justifyContent="space-between"
     >
       <Heading as="h3" color="white" fontWeight="normal">
-        Wiki Project
+        <NextLink href="/">Wiki Project</NextLink>
       </Heading>
 
       <NavSearch />

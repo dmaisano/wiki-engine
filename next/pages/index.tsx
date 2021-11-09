@@ -2,7 +2,27 @@ import { Heading } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { Layout } from "../components";
+import { Layout, WikiPage } from "../components";
+
+const sampleMarkdown = `
+## express.js hello world example
+
+\`\`\`js
+const express = require('express')
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.listen(port, () => {
+  console.log(\`Example app listening at http://localhost:\${port}\`)
+})
+\`\`\`
+
+[Test Link](/foo)
+`;
 
 const Home: NextPage = () => {
   return (
@@ -14,7 +34,14 @@ const Home: NextPage = () => {
       </Head>
 
       <Layout>
-        <Heading as="h1">Simple Wiki Engine</Heading>
+        <WikiPage
+          {...{
+            slug: "/",
+            title: "Main Page",
+            markdown: sampleMarkdown,
+            description: "",
+          }}
+        />
       </Layout>
     </div>
   );
