@@ -1,30 +1,11 @@
-import { Heading } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import { Layout, WikiPage } from "../components";
-
-const sampleMarkdown = `
-## express.js hello world example
-
-\`\`\`js
-const express = require('express')
-const app = express()
-const port = 3000
-
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-app.listen(port, () => {
-  console.log(\`Example app listening at http://localhost:\${port}\`)
-})
-\`\`\`
-
-[Test Link](/foo)
-`;
+import router from "next/router";
+import { Layout } from "../components";
 
 const Home: NextPage = () => {
+  router.replace("/wiki/main");
+
   return (
     <div>
       <Head>
@@ -33,16 +14,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Layout>
-        <WikiPage
-          {...{
-            slug: "/",
-            title: "Main Page",
-            markdown: sampleMarkdown,
-            description: "",
-          }}
-        />
-      </Layout>
+      <Layout></Layout>
     </div>
   );
 };

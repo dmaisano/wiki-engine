@@ -1,7 +1,13 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   async redirects() {
-    return [{}];
+    return [
+      {
+        source: `/`,
+        destination: `/wiki/main`,
+        permanent: true,
+      },
+    ];
   },
   reactStrictMode: true,
 };
