@@ -1,38 +1,13 @@
-import { Container, Flex, Heading } from "@chakra-ui/layout";
+import { Button } from "@chakra-ui/button";
+import { Box, Container, Flex, Heading, Text } from "@chakra-ui/layout";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Layout, NextChakraLink } from "../../components";
-import { BASE_URL, postData } from "../../utils";
-
-const sampleMarkdown = `
-## express.js hello world example
-
-\`\`\`js
-const express = require('express')
-const app = express()
-const port = 3000
-
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-app.listen(port, () => {
-  console.log(\`Example app listening at http://localhost:\${port}\`)
-})
-\`\`\`
-
-[Test Link](/foo)
-`;
-
-type PageProps = {
-  slug: string;
-  title: string;
-  description?: string;
-  content: string; // markdown
-};
+import { WikiPageProps } from "../../types";
+import { BASE_URL, WIKI_HOME_URL } from "../../utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!context.params || typeof context.params["slug"] !== "string") {
@@ -43,20 +18,32 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const slug = context.params["slug"];
 
+  let data: WikiPageProps = { slug } as any;
   try {
-    const res = await fetch(`${BASE_URL}/get-page/${slug}`).then((res) =>
-      res.json(),
-    );
-  } catch (error) {}
+    const res = await fetch(`${BASE_URL}/page/${slug}`);
+
+    if (res.status !== 200) {
+      throw new Error(`page not found`);
+    }
+
+    data = await res.json();
+  } catch (error) {
+    data.notFound = true;
+    console.error({ wiki_page_error: (error as Error).message });
+  }
 
   return {
     props: {
-      data: {},
+      data,
     },
   };
 };
 
-const WikiPage = ({ data }: { data: PageProps }) => {
+const WikiPage = ({
+  data: { notFound, content, slug, title },
+}: {
+  data: WikiPageProps;
+}) => {
   return (
     <div>
       <Head>
@@ -73,22 +60,40 @@ const WikiPage = ({ data }: { data: PageProps }) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Heading as="h2">{data.slug}</Heading>
+            <Heading as="h2">{title}</Heading>
 
-            <Flex fontWeight="medium">
-              <NextChakraLink href={`/`} color="blue" mr="6">
-                Edit Page
+            <Box fontWeight="medium">
+              <NextChakraLink href={`/edit-page/${slug}`} color="blue" mr="6">
+                {notFound ? `Create Page` : `Edit Page`}
               </NextChakraLink>
-              <NextChakraLink href={`/`} color="blue">
-                View History
-              </NextChakraLink>
-            </Flex>
+              {!notFound && (
+                <NextChakraLink href={`/`} color="blue">
+                  View History
+                </NextChakraLink>
+              )}
+            </Box>
           </Flex>
 
-          <Container id="markdown-content" maxW="container.lg" mt="16">
-            <ReactMarkdown components={ChakraUIRenderer()} skipHtml={false}>
-              {sampleMarkdown}
-            </ReactMarkdown>
+          <Container id="page-content" maxW="container.lg" mt="16">
+            {notFound ? (
+              <>
+                <Text fontSize="xl" fontWeight="semibold">
+                  This page does not exist yet.
+                </Text>
+                <Button
+                  as={NextChakraLink}
+                  href={WIKI_HOME_URL}
+                  colorScheme="messenger"
+                  mt="6"
+                >
+                  Go home
+                </Button>
+              </>
+            ) : (
+              <ReactMarkdown components={ChakraUIRenderer()} skipHtml={false}>
+                {content}
+              </ReactMarkdown>
+            )}
           </Container>
         </div>
       </Layout>

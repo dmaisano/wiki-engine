@@ -2,9 +2,10 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import router from "next/router";
 import { Layout } from "../components";
+import { WIKI_HOME_URL } from "../utils";
 
 const Home: NextPage = () => {
-  router.replace("/wiki/main");
+  router.replace(WIKI_HOME_URL);
 
   return (
     <div>

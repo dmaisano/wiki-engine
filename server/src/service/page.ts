@@ -1,7 +1,9 @@
 import { Response } from "express";
+import _ from "lodash";
 import { getRepository } from "typeorm";
-import { v4 } from "uuid";
 import { Page } from "../entity/Page";
+import { PageHistory } from "../entity/PageHistory";
+import { generatePageSlug } from "../utils";
 
 class PageService {
   async getPage({ slug, res }: { slug?: string; res: Response }) {
@@ -11,43 +13,64 @@ class PageService {
 
     const pageRepo = getRepository(Page);
 
-    return pageRepo.findOne({ where: { slug } });
+    const page = await pageRepo.findOne({ where: { slug } });
+
+    // handle edge case for loading the main index wiki page for the first time
+    if (!page && slug === `main`) {
+      const defaults: any = {
+        title: `Main Page`,
+        content: `# Main Page`,
+        description: `Example description`,
+      } as Page;
+
+      return this.createPage(defaults, true);
+    } else {
+      return page;
+    }
   }
 
-  // TODO: add method to handle image uploading
-  // images will probably be saved in Filesystem
-  async createPage({
-    title,
-    content,
-    description = "",
-  }: {
-    title: string;
-    content: string;
-    description: string;
-  }) {
+  async createPage(
+    {
+      title,
+      description = "",
+      content = "",
+    }: {
+      title: string;
+      description: string;
+      content: string;
+    },
+    isMainPage: boolean = false,
+  ) {
     const pageRepo = getRepository(Page);
+    const pageHistoryRepo = getRepository(PageHistory);
     const page = new Page();
 
-    // this is redundant for a small example app (and probably not efficient in prod)
-    // generates a unique primary key per page, ensuring it does not exist in the DB
-    const generatePrimaryKey = async (): Promise<string> => {
-      const key = v4();
-
-      const page = await pageRepo.findOne({ where: { slug: key } });
-
-      if (!page) {
-        return key;
-      } else {
-        return generatePrimaryKey();
-      }
-    };
-
-    page.slug = await generatePrimaryKey();
-    page.content = content;
+    let slug: string;
+    if (isMainPage) {
+      slug = `main`;
+    } else {
+      slug = await generatePageSlug(pageRepo);
+    }
+    page.slug = slug;
     page.title = title;
     page.description = description;
+    page.content = content;
 
-    return pageRepo.save(page);
+    console.log({ page });
+    try {
+      // TODO: make this a SQL transaction
+      const savedPage = await pageRepo.save(page);
+      await pageHistoryRepo.save({
+        slug,
+        title,
+        description,
+        content,
+      });
+
+      return savedPage;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

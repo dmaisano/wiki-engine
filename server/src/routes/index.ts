@@ -14,12 +14,12 @@ router.get(`/page/:slug`, async (req, res, next) => {
     const page = await pageService.getPage({ slug, res });
 
     if (!page) {
-      res.json(null);
+      res.sendStatus(404);
     } else {
       res.json(page);
     }
   } catch (error) {
-    res.status(500).json("failed to create wiki page");
+    res.sendStatus(500);
   }
 });
 
@@ -29,7 +29,7 @@ router.post(`/create-page`, async (req, res, next) => {
     await pageService.createPage(req.body);
     res.sendStatus(201);
   } catch (err) {
-    console.log(err);
+    console.error({ create_page: err });
     res.status(500).json("failed to create wiki page");
   }
 });

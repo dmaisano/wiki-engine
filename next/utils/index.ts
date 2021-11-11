@@ -2,6 +2,8 @@ export const isServer = () => typeof window === "undefined";
 
 export const BASE_URL = `http://localhost:3001`;
 
+export const WIKI_HOME_URL = `/wiki/main`;
+
 // ? reference: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 export const postData = async <T>(url = ``, data = {}): Promise<T> => {
   // Default options are marked with *
