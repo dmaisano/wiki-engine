@@ -14,5 +14,5 @@
     "**/*.code-search": true,
     "**/package-lock.json": true
   },
-  "cSpell.words": ["chakra", "Formik", "semibold"]
+  "cSpell.words": ["chakra", "Formik", "semibold", "typeorm"]
 }

@@ -26,7 +26,7 @@ router.get(`/page/:slug`, async (req, res, next) => {
 router.post(`/create-page`, async (req, res, next) => {
   // TODO: add validation here if necessary
   try {
-    await pageService.createPage(req.body);
+    await pageService.insertOrUpdatePage(req.body);
     res.sendStatus(201);
   } catch (err) {
     console.error({ create_page: err });

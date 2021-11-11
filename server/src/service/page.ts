@@ -1,9 +1,8 @@
 import { Response } from "express";
 import _ from "lodash";
-import { getRepository } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import { Page } from "../entity/Page";
 import { PageHistory } from "../entity/PageHistory";
-import { generatePageSlug } from "../utils";
 
 class PageService {
   async getPage({ slug, res }: { slug?: string; res: Response }) {
@@ -17,57 +16,56 @@ class PageService {
 
     // handle edge case for loading the main index wiki page for the first time
     if (!page && slug === `main`) {
-      const defaults: any = {
-        title: `Main Page`,
-        content: `# Main Page`,
-        description: `Example description`,
-      } as Page;
+      try {
+        const defaults: any = {
+          slug: `main`,
+          title: `Main Page`,
+          content: `# Heading 1\n## Heading 2\n### Heading 3\n#### Heading 4\n##### Heading 5\n###### Heading 6\n\`\`\`js\nconsole.log("hello world");\n\`\`\`\nSome random text`,
+          description: `first commit`,
+        } as Page;
 
-      return this.createPage(defaults, true);
+        return this.insertOrUpdatePage(defaults);
+      } catch (error) {
+        throw error;
+      }
     } else {
       return page;
     }
   }
 
-  // TODO: refactor this method to 'insertOrUpdate'
-  async createPage(
-    {
-      title,
-      description = "",
-      content = "",
-    }: {
-      title: string;
-      description: string;
-      content: string;
-    },
-    isMainPage: boolean = false,
-  ) {
-    const pageRepo = getRepository(Page);
-    const pageHistoryRepo = getRepository(PageHistory);
-    const page = new Page();
-
-    let slug: string;
-    if (isMainPage) {
-      slug = `main`;
-    } else {
-      slug = await generatePageSlug(pageRepo);
-    }
-    page.slug = slug;
-    page.title = title;
-    page.description = description;
-    page.content = content;
-
+  async insertOrUpdatePage({
+    title,
+    description = "",
+    content = "",
+    slug,
+  }: {
+    slug: string;
+    title: string;
+    description: string;
+    content: string;
+  }): Promise<Page | null> {
     try {
-      // TODO: make this a SQL transaction
-      const savedPage = await pageRepo.save(page);
-      await pageHistoryRepo.save({
-        slug,
-        title,
-        description,
-        content,
-      });
+      slug = _.kebabCase(slug);
 
-      return savedPage;
+      const pageEntity = await getConnection().manager.transaction<Page>(
+        async (entityManager) => {
+          const result = await entityManager.save(Page, {
+            slug,
+            title,
+            description,
+            content,
+          });
+          await entityManager.insert(PageHistory, {
+            slug,
+            title,
+            description,
+            content,
+          });
+          return result;
+        },
+      );
+
+      return pageEntity;
     } catch (error) {
       throw error;
     }
