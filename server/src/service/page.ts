@@ -47,6 +47,8 @@ class PageService {
     try {
       slug = _.kebabCase(slug);
 
+      console.log({ slug });
+
       const pageEntity = await getConnection().manager.transaction<Page>(
         async (entityManager) => {
           const result = await entityManager.save(Page, {
@@ -60,6 +62,7 @@ class PageService {
             title,
             description,
             content,
+            // sourcePage: result,
           });
           return result;
         },

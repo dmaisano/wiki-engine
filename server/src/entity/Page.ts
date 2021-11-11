@@ -10,7 +10,7 @@ import { PageHistory } from "./PageHistory";
 
 @Entity()
 export class Page {
-  @PrimaryColumn({ unique: true })
+  @PrimaryColumn({ unique: true, nullable: false })
   slug!: string;
 
   @Column()

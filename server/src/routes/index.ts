@@ -23,7 +23,7 @@ router.get(`/page/:slug`, async (req, res, next) => {
   }
 });
 
-router.post(`/create-page`, async (req, res, next) => {
+router.post(`/create-edit-page`, async (req, res, next) => {
   // TODO: add validation here if necessary
   try {
     await pageService.insertOrUpdatePage(req.body);

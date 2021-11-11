@@ -7,7 +7,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Layout, NextChakraLink } from "../../components";
 import { WikiPageProps } from "../../types";
-import { BASE_URL, WIKI_HOME_URL } from "../../utils";
+import { getPageFromSlug, WIKI_HOME_URL } from "../../utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!context.params || typeof context.params[`slug`] !== "string") {
@@ -17,21 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   const slug = context.params[`slug`];
-
-  let data: WikiPageProps = { slug } as any;
-  try {
-    const res = await fetch(`${BASE_URL}/page/${slug}`);
-
-    if (res.status !== 200) {
-      throw new Error(`page not found`);
-    }
-
-    data = await res.json();
-  } catch (error) {
-    data.notFound = true;
-    console.error({ wiki_page_error: (error as Error).message });
-  }
-
+  const data = await getPageFromSlug(slug);
   return {
     props: {
       data,
@@ -40,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const WikiPage = ({
-  data: { notFound, content, slug, title },
+  data: { slug, title, content, notFound },
 }: {
   data: WikiPageProps;
 }) => {
@@ -60,7 +46,7 @@ const WikiPage = ({
             alignItems="center"
             justifyContent="space-between"
           >
-            <Heading as="h2">{title}</Heading>
+            <Heading as="h2">{title || slug}</Heading>
 
             <Box fontWeight="medium">
               <NextChakraLink href={`/edit-page/${slug}`} color="blue" mr="6">
@@ -85,9 +71,11 @@ const WikiPage = ({
                 </Button>
               </>
             ) : (
-              <ReactMarkdown components={ChakraUIRenderer()} skipHtml={false}>
-                {content}
-              </ReactMarkdown>
+              content && (
+                <ReactMarkdown components={ChakraUIRenderer()} skipHtml={false}>
+                  {content}
+                </ReactMarkdown>
+              )
             )}
           </Container>
         </div>

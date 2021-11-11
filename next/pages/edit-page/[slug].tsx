@@ -7,29 +7,34 @@ import {
 import { Input } from "@chakra-ui/input";
 import { Box, Container, Flex, Heading } from "@chakra-ui/layout";
 import { Textarea } from "@chakra-ui/textarea";
+import axios from "axios";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { useFormik } from "formik";
 import { isEmpty } from "lodash";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Layout } from "../../components";
 import { WikiPageProps } from "../../types";
+import { API_ENDPOINTS, getPageFromSlug } from "../../utils";
 
-type PageProps = WikiPageProps & { pageTitle: string };
+type FormValues = {
+  title: WikiPageProps["title"];
+  description: WikiPageProps["description"];
+  content: WikiPageProps["content"];
+};
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  if (!context.params || typeof context.params[`page-title`] !== "string") {
+  if (!context.params || typeof context.params[`slug`] !== "string") {
     return {
       notFound: true,
     };
   }
 
-  const pageTitle = context.params["page-title"];
-
-  let data: PageProps = { pageTitle } as any;
-
+  const slug = context.params[`slug`];
+  const data = await getPageFromSlug(slug);
   return {
     props: {
       data,
@@ -37,15 +42,32 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const EditPage = ({ data: { pageTitle } }: { data: PageProps }) => {
-  const formik = useFormik<{
-    title: string;
-    description?: string;
-    content?: string;
-  }>({
-    initialValues: { title: pageTitle, content: "", description: "" },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+const EditPage = ({ data }: { data: WikiPageProps }) => {
+  const router = useRouter();
+
+  const initialValues: FormValues = {
+    title: data.title,
+    description: data.description || "",
+    content: data.content || "",
+  };
+
+  const formik = useFormik<FormValues>({
+    initialValues,
+    onSubmit: async (values) => {
+      const postData = {
+        ...values,
+        slug: data.slug,
+      };
+
+      try {
+        await axios.post(
+          `${API_ENDPOINTS.BASE_URL}/${API_ENDPOINTS.CREATE_EDIT_PAGE}`,
+          postData,
+        );
+      } catch (error) {
+        alert(`Failed to Edit Page`);
+        console.error({ edit_page_error: { error, postData } });
+      }
     },
     validate: (values) => {
       const errors: any = {};
@@ -78,7 +100,14 @@ const EditPage = ({ data: { pageTitle } }: { data: PageProps }) => {
                 <Button disabled={!isEmpty(formik.errors)} type="submit" mr="4">
                   Save
                 </Button>
-                <Button variant="outline">Cancel</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    router.back();
+                  }}
+                >
+                  Go Back
+                </Button>
               </Box>
             </Flex>
 

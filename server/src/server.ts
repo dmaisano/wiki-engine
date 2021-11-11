@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import path from "path";
 import "reflect-metadata";
@@ -10,6 +11,7 @@ import { PROJECT_ROOT_DIR } from "./utils";
 const main = async () => {
   const app = express();
   app.use(express.json());
+  app.use(cors());
 
   const conn = await createConnection({
     type: `sqlite`,
