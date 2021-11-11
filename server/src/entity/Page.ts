@@ -30,7 +30,8 @@ export class Page {
 
   // ? could make this eager fetch if I want to always have the page history fetched with each page
   @OneToMany(() => PageHistory, (historyEntry) => historyEntry.sourcePage, {
-    // eager: true,
+    eager: false,
+    onDelete: `CASCADE`,
   })
   history: PageHistory[];
 }

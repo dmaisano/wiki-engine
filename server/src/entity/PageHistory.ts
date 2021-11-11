@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -28,5 +29,6 @@ export class PageHistory {
   slug: string; // source slug
 
   @ManyToOne(() => Page, (page) => page.history)
+  @JoinColumn({ name: "slug" }) // references slug as FK from "page" table
   sourcePage: Page;
 }

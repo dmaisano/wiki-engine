@@ -29,6 +29,7 @@ class PageService {
     }
   }
 
+  // TODO: refactor this method to 'insertOrUpdate'
   async createPage(
     {
       title,
@@ -56,7 +57,6 @@ class PageService {
     page.description = description;
     page.content = content;
 
-    console.log({ page });
     try {
       // TODO: make this a SQL transaction
       const savedPage = await pageRepo.save(page);

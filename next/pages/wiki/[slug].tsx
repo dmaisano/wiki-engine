@@ -10,13 +10,13 @@ import { WikiPageProps } from "../../types";
 import { BASE_URL, WIKI_HOME_URL } from "../../utils";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  if (!context.params || typeof context.params["slug"] !== "string") {
+  if (!context.params || typeof context.params[`slug`] !== "string") {
     return {
       notFound: true,
     };
   }
 
-  const slug = context.params["slug"];
+  const slug = context.params[`slug`];
 
   let data: WikiPageProps = { slug } as any;
   try {
@@ -80,12 +80,7 @@ const WikiPage = ({
                 <Text fontSize="xl" fontWeight="semibold">
                   This page does not exist yet.
                 </Text>
-                <Button
-                  as={NextChakraLink}
-                  href={WIKI_HOME_URL}
-                  colorScheme="messenger"
-                  mt="6"
-                >
+                <Button as={NextChakraLink} href={WIKI_HOME_URL} mt="6">
                   Go home
                 </Button>
               </>
