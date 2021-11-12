@@ -6,6 +6,8 @@ export const isServer = () => typeof window === "undefined";
 
 export const API_ENDPOINTS = {
   BASE_URL: `http://localhost:3001`,
+  GET_SLUG: `slug`,
+  GET_PAGE: `page`,
   CREATE_EDIT_PAGE: `create-edit-page`,
 };
 

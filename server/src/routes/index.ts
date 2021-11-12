@@ -7,6 +7,18 @@ router.get("/", (_, res) => {
   res.send(`Express backend working`);
 });
 
+router.get(`/slug/:slug`, async (req, res, next) => {
+  const slug = req.params["slug"];
+
+  try {
+    const found = await pageService.getSlug(slug);
+
+    res.json({ found });
+  } catch (error) {
+    res.json({ found: false });
+  }
+});
+
 router.get(`/page/:slug`, async (req, res, next) => {
   const slug = req.params["slug"];
 

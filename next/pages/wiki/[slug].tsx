@@ -6,6 +6,7 @@ import Head from "next/head";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Layout, NextChakraLink } from "../../components";
+import MarkdownParser from "../../components/MarkdownParser";
 import { WikiPageProps } from "../../types";
 import { getPageFromSlug, WIKI_HOME_URL } from "../../utils";
 
@@ -72,7 +73,13 @@ const WikiPage = ({
               </>
             ) : (
               content && (
-                <ReactMarkdown components={ChakraUIRenderer()} skipHtml={false}>
+                <ReactMarkdown
+                  components={{
+                    ...ChakraUIRenderer(),
+                    p: MarkdownParser,
+                  }}
+                  skipHtml={false}
+                >
                   {content}
                 </ReactMarkdown>
               )

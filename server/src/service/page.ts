@@ -1,10 +1,36 @@
 import { Response } from "express";
-import _ from "lodash";
+import _, { isEmpty } from "lodash";
 import { getConnection, getRepository } from "typeorm";
 import { Page } from "../entity/Page";
 import { PageHistory } from "../entity/PageHistory";
 
 class PageService {
+  /*
+  ? An optional thing I could have done was to make create a table, something like "links". I would store all the links there, create a join table and set up a relation on the page table by parsing the markdown content, and creating associations for all the relevant links contained on that page. This approach would lead to less HTTP calls being made to the server. For this small demo application I did not see the need to over engineer it and make it more complex than it needed to be.
+  */
+  async getSlug(slug?: string): Promise<boolean> {
+    if (!slug) {
+      return false;
+    }
+
+    slug = _.kebabCase(slug);
+    const query_result = (await getConnection().query(
+      `
+      SELECT "slug"
+      FROM "page"
+      WHERE "slug" = $1
+      limit 1
+      `,
+      [slug],
+    )) as any[];
+
+    if (isEmpty(query_result)) {
+      return false;
+    }
+
+    return true;
+  }
+
   async getPage({ slug, res }: { slug?: string; res: Response }) {
     if (typeof slug !== "string") {
       return res.sendStatus(404);
@@ -47,8 +73,6 @@ class PageService {
     try {
       slug = _.kebabCase(slug);
 
-      console.log({ slug });
-
       const pageEntity = await getConnection().manager.transaction<Page>(
         async (entityManager) => {
           const result = await entityManager.save(Page, {
@@ -62,7 +86,6 @@ class PageService {
             title,
             description,
             content,
-            // sourcePage: result,
           });
           return result;
         },
