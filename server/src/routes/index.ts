@@ -31,6 +31,16 @@ router.post(`/upload`, async (req, res) => {
   }
 });
 
+router.get(`/search`, async (req, res) => {
+  if (!req.query.text || typeof req.query.text !== "string") {
+    return res.json([]);
+  }
+
+  const text = decodeURIComponent(req.query.text);
+  const pages = await pageService.searchPages(text);
+  return res.json(pages);
+});
+
 router.get(`/slug/:slug`, async (req, res) => {
   const slug = req.params["slug"];
 

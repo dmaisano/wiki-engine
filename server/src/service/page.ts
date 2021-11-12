@@ -5,6 +5,31 @@ import { Page } from "../entity/Page";
 import { PageHistory } from "../entity/PageHistory";
 
 class PageService {
+  async searchPages(text: string): Promise<Page[]> {
+    text = `%${text.trim()}%`;
+
+    try {
+      const pageRepo = getRepository(Page);
+
+      // fetch all pages that contain case-insensitive substring of the search text on the specified fields
+      return pageRepo.query(
+        `
+        SELECT p.*
+        FROM PAGE p
+        WHERE p.slug LIKE $1
+          OR p.title LIKE $1
+          OR p.description LIKE $1
+          OR p.content LIKE $1
+       `,
+        [text],
+      ) as Promise<Page[]>;
+    } catch (error) {
+      console.error({ search_pages_error: error });
+    }
+
+    return [];
+  }
+
   /*
   ? An optional thing I could have done was to make create a table, something like "links". I would store all the links there, create a join table and set up a relation on the page table by parsing the markdown content, and creating associations for all the relevant links contained on that page. This approach would lead to less HTTP calls being made to the server. For this small demo application I did not see the need to over engineer it and make it more complex than it needed to be.
   */

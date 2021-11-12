@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   GET_SLUG: `slug`,
   GET_PAGE: `page`,
   CREATE_EDIT_PAGE: `create-edit-page`,
+  SEARCH_PAGE: `search`,
   UPLOAD_IMAGE: `upload`,
 };
 
