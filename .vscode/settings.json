@@ -14,5 +14,12 @@
     "**/*.code-search": true,
     "**/package-lock.json": true
   },
-  "cSpell.words": ["chakra", "Formik", "semibold", "typeorm"]
+  "cSpell.words": [
+    "chakra",
+    "Dropzone",
+    "fileupload",
+    "Formik",
+    "semibold",
+    "typeorm"
+  ]
 }

@@ -1,6 +1,6 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import { Box } from "@chakra-ui/layout";
+import { Box } from "@chakra-ui/react";
 import React from "react";
 
 interface NavSearchProps {}

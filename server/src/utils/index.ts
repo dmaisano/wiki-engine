@@ -3,7 +3,11 @@ import { Repository } from "typeorm";
 import { v4 } from "uuid";
 import { Page } from "../entity/Page";
 
+export const SERVER_PORT = 3001;
+
 export const PROJECT_ROOT_DIR: string = path.resolve(__dirname, "../../");
+
+export const IMAGES_DIR = `${PROJECT_ROOT_DIR}/static/images`;
 
 // this is redundant for a small example app (and probably not efficient in prod)
 // generates a unique primary key / slug per page, ensuring it does not exist in the DB

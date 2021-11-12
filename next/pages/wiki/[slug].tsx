@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Box, Container, Flex, Heading, Text } from "@chakra-ui/layout";
+import { Box, Container, Flex, Heading, Text } from "@chakra-ui/react";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { GetServerSideProps } from "next";
 import Head from "next/head";

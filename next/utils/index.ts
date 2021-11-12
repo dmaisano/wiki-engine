@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   GET_SLUG: `slug`,
   GET_PAGE: `page`,
   CREATE_EDIT_PAGE: `create-edit-page`,
+  UPLOAD_IMAGE: `upload`,
 };
 
 export const WIKI_HOME_URL = `/wiki/main`;

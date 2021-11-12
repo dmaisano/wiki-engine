@@ -5,7 +5,7 @@ import {
   FormLabel,
 } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Box, Container, Flex, Heading } from "@chakra-ui/layout";
+import { Box, Container, Flex, Heading } from "@chakra-ui/react";
 import { Textarea } from "@chakra-ui/textarea";
 import axios from "axios";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
@@ -81,6 +81,42 @@ const EditPage = ({ data }: { data: WikiPageProps }) => {
   });
 
   const { title, content, description } = formik.values;
+
+  const handleFileUpload: React.ChangeEventHandler<HTMLInputElement> = async (
+    event,
+  ) => {
+    const files = event.target.files;
+
+    try {
+      if (files && files.length >= 1) {
+        const image = files[0];
+
+        const formData = new FormData();
+        formData.append(`file`, image);
+
+        const { data } = await axios.post<{ error: boolean; imgSrc?: string }>(
+          `${API_ENDPOINTS.BASE_URL}/${API_ENDPOINTS.UPLOAD_IMAGE}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
+
+        if (data.error || !data.imgSrc) {
+          throw new Error();
+        }
+
+        formik.setFieldValue(
+          `content`,
+          content + `\n\n![${data.imgSrc}](${data.imgSrc})\n\n`,
+        );
+      }
+    } catch (error) {
+      alert(`Failed to upload image`);
+    }
+  };
 
   return (
     <div>
@@ -161,13 +197,28 @@ const EditPage = ({ data }: { data: WikiPageProps }) => {
                 borderRadius="none"
                 overflowY="scroll"
               />
-              <Box height="650px" width="50%">
+              <Box height="650px" width="50%" overflowY="scroll">
                 <ReactMarkdown components={ChakraUIRenderer()}>
                   {content || ""}
                 </ReactMarkdown>
               </Box>
             </Flex>
           </form>
+
+          <Container mt="8">
+            <form action="">
+              <FormControl>
+                <label htmlFor="file">Max file size 5mb. JPG | GIF | PNG</label>
+                <input
+                  id="file"
+                  type="file"
+                  multiple={false}
+                  accept="image/jpeg,image/gif,image/png"
+                  onChange={handleFileUpload}
+                />
+              </FormControl>
+            </form>
+          </Container>
         </Container>
       </Layout>
     </div>

@@ -1,17 +1,30 @@
 import cors from "cors";
 import express from "express";
+import fileUpload from "express-fileupload";
+import { existsSync, mkdirSync } from "fs";
 import path from "path";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
 import { Page } from "./entity/Page";
 import { PageHistory } from "./entity/PageHistory";
 import router from "./routes";
-import { PROJECT_ROOT_DIR } from "./utils";
+import { IMAGES_DIR, PROJECT_ROOT_DIR, SERVER_PORT } from "./utils";
 
 const main = async () => {
+  // create images directory if not exists
+  if (!existsSync(IMAGES_DIR)) {
+    mkdirSync(IMAGES_DIR, { recursive: true });
+  }
+
   const app = express();
   app.use(express.json());
   app.use(cors());
+  app.use(
+    fileUpload({
+      limits: { fileSize: 5242880 }, // 5mb
+    }),
+  );
+  app.use(`/static`, express.static(`${PROJECT_ROOT_DIR}/static`));
 
   const conn = await createConnection({
     type: `sqlite`,
@@ -25,9 +38,8 @@ const main = async () => {
 
   app.use(router);
 
-  const port = 3001;
-  app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+  app.listen(SERVER_PORT, () => {
+    console.log(`Server running on http://localhost:${SERVER_PORT}`);
   });
 };
 
