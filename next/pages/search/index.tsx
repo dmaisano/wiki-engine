@@ -1,3 +1,14 @@
+import {
+  Container,
+  Heading,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@chakra-ui/react";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
@@ -5,19 +16,6 @@ import React from "react";
 import { Layout, NextChakraLink } from "../../components";
 import { WikiPageProps } from "../../types";
 import { API_ENDPOINTS } from "../../utils";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Text,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  Container,
-  Heading,
-} from "@chakra-ui/react";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!context.query || typeof context.query[`text`] !== "string") {
@@ -85,7 +83,7 @@ const SearchPage = ({
             </Thead>
             <Tbody>
               {pages.map((page) => (
-                <Tr>
+                <Tr key={page.slug}>
                   <Td>{page.title}</Td>
                   <Td>{page.content}</Td>
                   <Td>

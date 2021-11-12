@@ -56,11 +56,8 @@ class PageService {
     return true;
   }
 
-  async getPage({ slug, res }: { slug?: string; res: Response }) {
-    if (typeof slug !== "string") {
-      return res.sendStatus(404);
-    }
-
+  async getPage(slug: string) {
+    slug = _.kebabCase(slug);
     const pageRepo = getRepository(Page);
 
     const page = await pageRepo.findOne({ where: { slug } });

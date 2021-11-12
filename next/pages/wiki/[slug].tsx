@@ -54,7 +54,7 @@ const WikiPage = ({
                 {notFound ? `Create Page` : `Edit Page`}
               </NextChakraLink>
               {!notFound && (
-                <NextChakraLink href={`/`} color="blue">
+                <NextChakraLink href={`/history/${slug}`} color="blue">
                   View History
                 </NextChakraLink>
               )}

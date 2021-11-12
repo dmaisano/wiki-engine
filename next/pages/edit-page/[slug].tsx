@@ -198,7 +198,7 @@ const EditPage = ({ data }: { data: WikiPageProps }) => {
                 overflowY="scroll"
               />
               <Box height="650px" width="50%" overflowY="scroll">
-                <ReactMarkdown components={ChakraUIRenderer()}>
+                <ReactMarkdown components={ChakraUIRenderer()} skipHtml={false}>
                   {content || ""}
                 </ReactMarkdown>
               </Box>

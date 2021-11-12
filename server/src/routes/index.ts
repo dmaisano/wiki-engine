@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { UploadedFile } from "express-fileupload";
+import { arch } from "os";
 import { extname } from "path";
 import pageService from "../service/page";
+import pageHistoryService from "../service/pageHistory";
 import { IMAGES_DIR, SERVER_PORT } from "../utils";
 
 const router = Router();
@@ -56,16 +58,61 @@ router.get(`/slug/:slug`, async (req, res) => {
 router.get(`/page/:slug`, async (req, res) => {
   const slug = req.params["slug"];
 
+  if (typeof slug !== "string") {
+    return res.sendStatus(404);
+  }
+
   try {
-    const page = await pageService.getPage({ slug, res });
+    const page = await pageService.getPage(slug);
 
     if (!page) {
-      res.sendStatus(404);
+      return res.sendStatus(404);
     } else {
-      res.json(page);
+      return res.json(page);
     }
   } catch (error) {
-    res.sendStatus(500);
+    return res.sendStatus(500);
+  }
+});
+
+router.get(`/history/:slug`, async (req, res) => {
+  try {
+    const slug = req.params["slug"];
+
+    if (!slug) {
+      return res.json([]);
+    }
+
+    const history = await pageHistoryService.getHistory(slug);
+    return res.json(history);
+  } catch (error) {
+    return res.json([]);
+  }
+});
+
+router.get(`/archive`, async (req, res) => {
+  try {
+    const { slug, archiveId } = req.query;
+
+    if (
+      !slug ||
+      typeof slug !== "string" ||
+      !archiveId ||
+      typeof archiveId !== "string"
+    ) {
+      return res.json({});
+    }
+
+    const archiveIntId = parseInt(archiveId);
+
+    const result = await pageHistoryService.getPageArchive({
+      slug,
+      id: archiveIntId,
+    });
+
+    return res.json(result || {});
+  } catch (error) {
+    return res.json({});
   }
 });
 

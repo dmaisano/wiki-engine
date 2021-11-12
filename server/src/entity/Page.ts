@@ -28,9 +28,8 @@ export class Page {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // ? could make this eager fetch if I want to always have the page history fetched with each page
   @OneToMany(() => PageHistory, (historyEntry) => historyEntry.sourcePage, {
-    eager: false,
+    eager: true, // include relations on fetch
     onDelete: `CASCADE`,
   })
   history: PageHistory[];

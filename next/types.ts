@@ -8,6 +8,17 @@ export type GenericPageData<T> =
       data: T;
     };
 
+export type WikiPageArchive = {
+  notFound?: boolean;
+  id: number;
+  title: string;
+  description?: string;
+  content?: string;
+  archiveDate: string;
+  slug: string;
+  sourcePage: WikiPageProps;
+};
+
 export type WikiPageProps = {
   notFound?: boolean;
   slug: string;
@@ -17,4 +28,5 @@ export type WikiPageProps = {
   createdAt?: string;
   updatedAt?: string;
   archiveDate?: string;
+  history?: WikiPageArchive[];
 };

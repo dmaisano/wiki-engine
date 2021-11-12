@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   BASE_URL: `http://localhost:3001`,
   GET_SLUG: `slug`,
   GET_PAGE: `page`,
+  GET_ARCHIVE: `archive`,
   CREATE_EDIT_PAGE: `create-edit-page`,
   SEARCH_PAGE: `search`,
   UPLOAD_IMAGE: `upload`,
@@ -17,7 +18,9 @@ export const WIKI_HOME_URL = `/wiki/main`;
 
 export const getPageFromSlug = async (slug: string): Promise<WikiPageProps> => {
   try {
-    const res = await axios.get(`${API_ENDPOINTS.BASE_URL}/page/${slug}`);
+    const res = await axios.get(
+      `${API_ENDPOINTS.BASE_URL}/${API_ENDPOINTS.GET_PAGE}/${slug}`,
+    );
 
     if (res.status !== 200) {
       throw new Error(`page not found`);
