@@ -2,6 +2,19 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: Int!
+  username: String!
+  email: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Page {
   id: Int!
   title: String!
@@ -13,22 +26,24 @@ type Page {
   content: String
   createdAt: DateTime!
   updatedAt: DateTime!
+  creatorId: Int!
+  creator: User!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Query {
   pages: [Page!]!
   page(id: Int!): Page!
+  users: [User!]!
+  user(id: Int!): User!
 }
 
 type Mutation {
   createPage(createPageInput: CreatePageInput!): Page!
   updatePage(updatePageInput: UpdatePageInput!): Page!
   removePage(id: Int!): Page!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: Int!): User!
 }
 
 input CreatePageInput {
@@ -49,5 +64,20 @@ input UpdatePageInput {
 
   """Markdown content"""
   content: String
+  id: Int!
+}
+
+input CreateUserInput {
+  username: String!
+  email: String!
+  password: String!
+  confirmPassword: String!
+}
+
+input UpdateUserInput {
+  username: String
+  email: String
+  password: String
+  confirmPassword: String
   id: Int!
 }

@@ -9,9 +9,8 @@ import { Page } from './entities/page.entity';
 export class PageService {
   constructor(@InjectRepository(Page) private pagesRepo: Repository<Page>) {}
 
-  async create(createPageInput: CreatePageInput): Promise<Page | null> {
+  async create(createPageInput: CreatePageInput): Promise<Page> {
     const newPage = this.pagesRepo.create(createPageInput);
-
     return this.pagesRepo.save(newPage);
   }
 
@@ -21,19 +20,16 @@ export class PageService {
 
   async findOne(id: number): Promise<Page | null> {
     if (typeof id !== `number`) return null;
-
     return this.pagesRepo.findOneOrFail(id);
   }
 
   async update(updatePageInput: UpdatePageInput): Promise<Page | null> {
     if (!updatePageInput.id) return null;
-
     return this.pagesRepo.save(updatePageInput);
   }
 
   async delete(id: number): Promise<boolean> {
     const result = await this.pagesRepo.delete(id);
-
     return typeof result.affected === `number` && result.affected > 0;
   }
 }

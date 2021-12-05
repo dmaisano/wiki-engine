@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 @ObjectType()
@@ -33,4 +36,15 @@ export class Page {
   @UpdateDateColumn()
   @Field()
   updatedAt: Date;
+
+  @Column({ nullable: false })
+  @Field(() => Int)
+  creatorId: number;
+
+  @ManyToOne(() => User, (user) => user.pages, {
+    onDelete: `CASCADE`,
+  })
+  @JoinColumn({ name: `creatorId` })
+  @Field()
+  creator: User;
 }
