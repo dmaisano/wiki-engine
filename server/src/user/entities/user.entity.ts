@@ -16,6 +16,10 @@ export class User {
   @Field(() => Int)
   id: number;
 
+  @Column({ type: `boolean`, default: false })
+  @Field()
+  isAdmin: boolean;
+
   @Column({ unique: true })
   @Field()
   username: string;

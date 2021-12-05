@@ -4,6 +4,7 @@
 
 type User {
   id: Int!
+  isAdmin: Boolean!
   username: String!
   email: String!
   createdAt: DateTime!
